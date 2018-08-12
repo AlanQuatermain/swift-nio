@@ -1604,6 +1604,49 @@ class ByteBufferTest: XCTestCase {
 
         XCTAssertEqual(0, buf.readableBytes)
     }
+    
+    func testBase64Encoding() {
+        let plain_1 = "This is some sample text."
+        let base64_1 = "VGhpcyBpcyBzb21lIHNhbXBsZSB0ZXh0Lg=="
+        var buf = self.buf!
+        
+        buf.write(bytesAsBase64: plain_1.utf8)
+        XCTAssertEqual(buf.readableBytes, base64_1.count)
+        
+        let base64Encoded = buf.readString(length: buf.readableBytes)
+        XCTAssertNotNil(base64Encoded)
+        XCTAssertEqual(base64Encoded, base64_1)
+        
+        buf.clear()
+        
+        buf.write(base64EncodedBytes: base64Encoded!.utf8)
+        XCTAssertEqual(buf.readableBytes, plain_1.count)
+        
+        let decoded = buf.readString(length: buf.readableBytes)
+        XCTAssertNotNil(decoded)
+        XCTAssertEqual(decoded, plain_1)
+        
+        buf.clear()
+        
+        let plain_2 = "This is some sample text. This is some sample text. This is some sample text."
+        let base64_2 = "VGhpcyBpcyBzb21lIHNhbXBsZSB0ZXh0LiBUaGlzIGlzIHNvbWUgc2FtcGxlIHRleHQuIFRoaXMgaXMgc29tZSBzYW1wbGUgdGV4dC4="
+        
+        buf.write(bytesAsBase64: plain_2.utf8)
+        XCTAssertEqual(buf.readableBytes, base64_2.count)
+        
+        let base64Encoded2 = buf.readString(length: buf.readableBytes)
+        XCTAssertNotNil(base64Encoded2)
+        XCTAssertEqual(base64Encoded2, base64_2)
+        
+        buf.clear()
+        
+        buf.write(base64EncodedBytes: base64Encoded2!.utf8)
+        XCTAssertEqual(buf.readableBytes, plain_2.count)
+        
+        let decoded2 = buf.readString(length: buf.readableBytes)
+        XCTAssertNotNil(decoded2)
+        XCTAssertEqual(decoded2, plain_2)
+    }
 }
 
 private enum AllocationExpectationState: Int {
